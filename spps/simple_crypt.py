@@ -1,4 +1,4 @@
-# ${project.name}
+# Simple Password Protection Solution for Python
 #
 # Copyright © 2021-present Carsten Rambow (spps.dev@elomagic.de)
 #
@@ -22,13 +22,11 @@ from Crypto.Random import get_random_bytes
 from os.path import expanduser
 import os.path
 
-ALGORITHM = "AES"
-TRANSFORMATION = "AES/GCM/NoPadding"
-MASTER_KEY_FILE = expanduser("~") + "/.elomagic/masterkey"
+MASTER_KEY_FILE = expanduser("~") + "/.spps/masterkey"
 
 
-# Returns true when value is encrypted, tagged by surrounding braces "{" and "}".
 def is_encrypted_value(value):
+    """Returns true when value is encrypted, tagged by surrounding braces "{" and "}"."""
     return value is not None and value.startswith("{") and value.endswith("}")
 
 
@@ -38,55 +36,35 @@ def get_master_key():
         data = open(MASTER_KEY_FILE, "r").read()
         return base64.b64decode(data)
     else:
-        print("!!! Creating master key currently not implemented !!!!")
-    #     result = Base64.decode(base64);
-    #
-    #     key = new SecretKeySpec(result, ALGORITHM);
-    # } else {
-
         key = get_random_bytes(16)
+        b64 = base64.b64encode(key)
 
-#        cipher = AES.new(key, AES.MODE_GCM)
-#        ciphertext, tag = cipher.encrypt_and_digest(data)
+        file = open(MASTER_KEY_FILE, "w")
+        file.write(b64.decode("ascii"))
+        file.close()
 
-#        file_out = open("encrypted.bin", "wb")
-#        [ file_out.write(x) for x in (cipher.nonce, tag, ciphertext) ]
-#        file_out.close()
-
-#        KeyGenerator kg = KeyGenerator.getInstance(ALGORITHM);
-#        kg.init(128);
-#        key = kg.generateKey();
-
-#        result = key.getEncoded();
-
-#        String base64 = Base64.toBase64String(result);
-
-#        Files.write(MASTER_KEY_FILE, Collections.singleton(base64), StandardOpenOption.CREATE_NEW);
-#    }
         return key
 
 
-# Creates a cipher.
-def create_cipher():
+def create_cipher(iv):
+    """Creates a cipher."""
     key = get_master_key()
 
-    nonce = "0123456789abcdef".encode("ascii")
-
-    cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
-
-    return cipher
+    return AES.new(key, AES.MODE_GCM, nonce=iv)
 
 
-# Encrypt, encoded as Base64 and encapsulate with curly bracket of a string.
 def encrypt_string(value):
+    """Encrypt, encoded as Base64 and encapsulate with curly bracket of a string."""
+    iv = get_random_bytes(16)
     b = value.encode("utf8")
-    data, tag = create_cipher().encrypt_and_digest(b)
+    data, tag = create_cipher(iv).encrypt_and_digest(b)
 
-    b64 = base64.b64encode(data + tag)
+    b64 = base64.b64encode(iv + data + tag)
     return "{" + b64.decode("utf-8") + "}"
 
 
 def decrypt_string(value):
+    """Decrypt an encapsulate with curly bracket Base64 string."""
     if not is_encrypted_value(value):
         print("Given method parameter is not encrypted")
         exit()
@@ -94,10 +72,11 @@ def decrypt_string(value):
     b64 = value[1: -1]
     data = base64.b64decode(b64.encode("ascii"))
 
-    cypher_text = data[:-16]
+    iv = data[:16]
+    cypher_text = data[16:-16]
     tag = data[-16:]
 
-    cypher = create_cipher()
+    cypher = create_cipher(iv)
     b = cypher.decrypt_and_verify(cypher_text, tag)
 
     return b.decode("utf8")

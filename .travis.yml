@@ -1,11 +1,20 @@
+# Disable sudo to speed up the build
 sudo: false
+
 language: python
+
 python:
   - "3.9"
+
+# Install the pip dependencies
 install:
   - pip install -r requirements.txt
+
+# Run the unit test
 script:
-  - pytest
-cache:
-  directories:
-    - $HOME/.m2
+  - pytest --cov=spps/
+
+cache: pip
+
+after_success:
+  - coveralls

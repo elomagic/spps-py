@@ -4,6 +4,11 @@ Simple Password Protection Solution for Python
 
 ---
 
+Features
+
+* Cross programming languages support (Java, Python)
+* AES 256 CGM en-/decryption
+
 [![Build Status](https://travis-ci.org/elomagic/spps-py.svg?branch=master)](https://travis-ci.org/elomagic/spps-py)
 [![Coverage Status](https://coveralls.io/repos/github/elomagic/spps-py/badge.svg?branch=master)](https://coveralls.io/github/elomagic/spps-py?branch=master)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
