@@ -39,7 +39,7 @@ def get_master_key():
         key = get_random_bytes(16)
         b64 = base64.b64encode(key)
 
-        file = open(MASTER_KEY_FILE, "w")
+        file = open(MASTER_KEY_FILE, "x")
         file.write(b64.decode("ascii"))
         file.close()
 
