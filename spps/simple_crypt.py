@@ -17,8 +17,8 @@
 # limitations under the License.
 
 import base64
-from crypto.Cipher import AES
-from crypto.Random import get_random_bytes
+from Crypto.Cipher import AES
+from Crypto.Random import get_random_bytes
 from os.path import expanduser
 import os.path
 
