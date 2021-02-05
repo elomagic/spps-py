@@ -42,22 +42,27 @@ def is_encrypted_value(value):
     return value is not None and value.startswith("{") and value.endswith("}")
 
 
+def create_random_key():
+    """ Creates and secure random key and returns it as Base64 encoded string."""
+    key = get_random_bytes(16)
+    return base64.b64encode(key).decode("ascii")
+
+
 def get_master_key():
-    """ This method works so far """
+    """Reads or creates the master key."""
     if os.path.isfile(MASTER_KEY_FILE):
         data = open(MASTER_KEY_FILE, "r").read()
         return base64.b64decode(data)
     else:
-        key = get_random_bytes(16)
-        b64 = base64.b64encode(key)
+        key = create_random_key()
 
         Path(MASTER_KEY_FOLDER).mkdir(parents=True, exist_ok=True)
 
         file = open(MASTER_KEY_FILE, "w")
-        file.write(b64.decode("ascii"))
+        file.write(key)
         file.close()
 
-        return key
+        return base64.b64decode(key)
 
 
 def create_cipher(iv):
