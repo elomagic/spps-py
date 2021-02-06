@@ -44,7 +44,7 @@ def is_encrypted_value(value):
 
 def create_random_key():
     """ Creates and secure random key and returns it as Base64 encoded string."""
-    key = get_random_bytes(16)
+    key = get_random_bytes(32)
     return base64.b64encode(key).decode("ascii")
 
 
