@@ -8,10 +8,7 @@ def test_is_encrypted_value():
     assert not simple_crypt.is_encrypted_value("abc}")
     assert not simple_crypt.is_encrypted_value("{abc")
     assert not simple_crypt.is_encrypted_value("abc")
-
-
-def test_create_random_key():
-    assert len(simple_crypt.create_random_key()) == 24
+    assert not simple_crypt.is_encrypted_value(None)
 
 
 def test_encrypt_string():
