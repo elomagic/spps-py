@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+
+"""Main package for en- and decrypt strings"""
+
+#
 # Simple Password Protection Solution for Python
 #
 # Copyright © 2021-present Carsten Rambow (spps.dev@elomagic.de)
@@ -15,14 +20,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
 import base64
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 from os.path import expanduser
 import os.path
+from pathlib import Path
 
-MASTER_KEY_FILE = expanduser("~") + "/.spps/masterkey"
+__author__ = "Carsten Rambow"
+__copyright__ = "Copyright 2021-present, Carsten Rambow (spps.dev@elomagic.de)"
+__license__ = "Apache-2.0"
+
+MASTER_KEY_FOLDER = expanduser("~") + "/.spps/"
+MASTER_KEY_FILE = MASTER_KEY_FOLDER + "masterkey"
 
 
 def is_encrypted_value(value):
@@ -30,19 +42,27 @@ def is_encrypted_value(value):
     return value is not None and value.startswith("{") and value.endswith("}")
 
 
+def create_random_key():
+    """ Creates and secure random key and returns it as Base64 encoded string."""
+    key = get_random_bytes(16)
+    return base64.b64encode(key).decode("ascii")
+
+
 def get_master_key():
-    """ This method works so far """
+    """Reads or creates the master key."""
     if os.path.isfile(MASTER_KEY_FILE):
         data = open(MASTER_KEY_FILE, "r").read()
         return base64.b64decode(data)
     else:
-        key = get_random_bytes(32)
-        b64 = base64.b64encode(key)
+        key = create_random_key()
 
-        with open(MASTER_KEY_FILE, "x") as file:
-            file.write(b64.decode("ascii"))
+        Path(MASTER_KEY_FOLDER).mkdir(parents=True, exist_ok=True)
 
-        return key
+        file = open(MASTER_KEY_FILE, "w")
+        file.write(key)
+        file.close()
+
+        return base64.b64decode(key)
 
 
 def create_cipher(iv):
@@ -54,6 +74,9 @@ def create_cipher(iv):
 
 def encrypt_string(value):
     """Encrypt, encoded as Base64 and encapsulate with curly bracket of a string."""
+    if value is None:
+        return None
+
     iv = get_random_bytes(16)
     b = value.encode("utf8")
     data, tag = create_cipher(iv).encrypt_and_digest(b)
@@ -64,6 +87,9 @@ def encrypt_string(value):
 
 def decrypt_string(value):
     """Decrypt an encapsulate with curly bracket Base64 string."""
+    if value is None:
+        return None
+
     if not is_encrypted_value(value):
         print("Given method parameter is not encrypted")
         exit()
