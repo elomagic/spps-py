@@ -36,7 +36,7 @@ def get_master_key():
         data = open(MASTER_KEY_FILE, "r").read()
         return base64.b64decode(data)
     else:
-        key = get_random_bytes(16)
+        key = get_random_bytes(32)
         b64 = base64.b64encode(key)
 
         with open(MASTER_KEY_FILE, "x") as file:
