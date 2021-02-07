@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Main package for en- and decrypt strings"""
+"""Main package for en- and decrypt strings by using Powershell 7 or higher"""
 
 #
 # Simple Password Protection Solution for Python
@@ -28,6 +28,8 @@ from Crypto.Random import get_random_bytes
 from os.path import expanduser
 import os.path
 from pathlib import Path
+import subprocess
+import codecs
 
 __author__ = "Carsten Rambow"
 __copyright__ = "Copyright 2021-present, Carsten Rambow (spps.dev@elomagic.de)"
@@ -74,15 +76,19 @@ def create_cipher(iv):
 
 def encrypt_string(value):
     """Encrypt, encoded as Base64 and encapsulate with curly bracket of a string."""
+
     if value is None:
         return None
 
-    iv = get_random_bytes(16)
-    b = value.encode("utf8")
-    data, tag = create_cipher(iv).encrypt_and_digest(b)
+    cmd = "echo $(ConvertFrom-SecureString $(ConvertTo-SecureString \"{}\" -AsPlainText -Force))"
 
-    b64 = base64.b64encode(iv + data + tag)
-    return "{" + b64.decode("utf-8") + "}"
+    process = subprocess.Popen(["pwsh", "-Command", cmd.format(value)], stdout=subprocess.PIPE)
+    output = process.stdout.readline()
+    process.poll()
+
+    line = output.decode("ascii").replace("\n", "").replace("\r", "")
+
+    return "{" + codecs.encode(codecs.decode(line, 'hex'), 'base64').decode().replace('\n', '') + "}"
 
 
 def decrypt_string(value):
@@ -95,14 +101,13 @@ def decrypt_string(value):
         exit()
 
     b64 = value[1: -1]
-    data = base64.b64decode(b64.encode("ascii"))
+    data = base64.b64decode(b64.encode("ascii")).decode("ascii")
 
-    iv = data[:16]
-    cypher_text = data[16:-16]
-    tag = data[-16:]
+    cmd = "echo $(ConvertFrom-SecureString $(ConvertTo-SecureString \"{}\" -Force) -AsPlainText)"
 
-    cypher = create_cipher(iv)
-    b = cypher.decrypt_and_verify(cypher_text, tag)
+    process = subprocess.Popen(["pwsh", "-Command", cmd.format(data)], stdout=subprocess.PIPE)
+    output = process.stdout.readline()
+    process.poll()
 
-    return b.decode("utf8")
+    return output
 
