@@ -18,12 +18,13 @@ setup(
     name="spps",
     version="1.0.0",
     description="Simple Password Protection Solution for Python",
-    long_description=readme,
+    long_description="file:readme",
     long_description_content_type="text/markdown",
     author="Carsten Rambow",
     author_email="spps.dev@elomagic.de",
     url="https://github.com/elomagic/spps-py",
-    license=license_text,
+    license="Apache-2.0",
     python_requires=">=3.9",
+    keywords=["encrypt", "decrypt", "password", "security", "hide", "protect", "key", "secret"],
     packages=find_packages(exclude=('tests', 'docs'))
 )
