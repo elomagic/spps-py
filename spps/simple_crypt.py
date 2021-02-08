@@ -22,14 +22,10 @@
 # limitations under the License.
 #
 
-import base64
-from Crypto.Cipher import AES
-from Crypto.Random import get_random_bytes
-from os.path import expanduser
-import os.path
-from pathlib import Path
 import subprocess
 import codecs
+import base64
+from os.path import expanduser
 
 __author__ = "Carsten Rambow"
 __copyright__ = "Copyright 2021-present, Carsten Rambow (spps.dev@elomagic.de)"
@@ -42,36 +38,6 @@ MASTER_KEY_FILE = MASTER_KEY_FOLDER + "masterkey"
 def is_encrypted_value(value):
     """Returns true when value is encrypted, tagged by surrounding braces "{" and "}"."""
     return value is not None and value.startswith("{") and value.endswith("}")
-
-
-def create_random_key():
-    """ Creates and secure random key and returns it as Base64 encoded string."""
-    key = get_random_bytes(32)
-    return base64.b64encode(key).decode("ascii")
-
-
-def get_master_key():
-    """Reads or creates the master key."""
-    if os.path.isfile(MASTER_KEY_FILE):
-        data = open(MASTER_KEY_FILE, "r").read()
-        return base64.b64decode(data)
-    else:
-        key = create_random_key()
-
-        Path(MASTER_KEY_FOLDER).mkdir(parents=True, exist_ok=True)
-
-        file = open(MASTER_KEY_FILE, "w")
-        file.write(key)
-        file.close()
-
-        return base64.b64decode(key)
-
-
-def create_cipher(iv):
-    """Creates a cipher."""
-    key = get_master_key()
-
-    return AES.new(key, AES.MODE_GCM, nonce=iv)
 
 
 def encrypt_string(value):
@@ -87,8 +53,9 @@ def encrypt_string(value):
     process.poll()
 
     line = output.decode("ascii").replace("\n", "").replace("\r", "")
+    b64 = codecs.encode(codecs.decode(line, 'hex'), 'base64').decode().replace('\n', '')
 
-    return "{" + codecs.encode(codecs.decode(line, 'hex'), 'base64').decode().replace('\n', '') + "}"
+    return "{" + b64 + "}"
 
 
 def decrypt_string(value):
@@ -101,7 +68,7 @@ def decrypt_string(value):
         exit()
 
     b64 = value[1: -1]
-    data = base64.b64decode(b64.encode("ascii")).decode("ascii")
+    data = base64.b64decode(b64.encode("ascii")).hex()
 
     cmd = "echo $(ConvertFrom-SecureString $(ConvertTo-SecureString \"{}\" -Force) -AsPlainText)"
 
@@ -109,5 +76,7 @@ def decrypt_string(value):
     output = process.stdout.readline()
     process.poll()
 
-    return output
+    result = output.decode("utf8")
+
+    return result
 
