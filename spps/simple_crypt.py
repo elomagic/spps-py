@@ -76,7 +76,7 @@ def decrypt_string(value):
     output = process.stdout.readline()
     process.poll()
 
-    result = output.decode("utf8")
+    result = output.decode("cp437").replace("\n", "").replace("\r", "")
 
     return result
 
