@@ -23,8 +23,7 @@
 #
 
 import sys
-import importlib.resources as pkg_resources
-from . import resources
+from pkg_resources import resource_string
 from simple_crypt import encrypt_string as encrypt
 
 __author__ = "Carsten Rambow"
@@ -33,7 +32,7 @@ __license__ = "Apache-2.0"
 
 
 def print_help():
-    text = pkg_resources.read_text(resources, 'encrypt_secret.txt')
+    text = resource_string('resources', 'encrypt_secret.txt').decode('ascii')
     print(text)
 
 

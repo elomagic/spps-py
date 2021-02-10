@@ -2,10 +2,12 @@ Usage: create_master_key.py [-Force] [-Relocation <path>]")
 
        create_master_key.py -Help | -?
 
+More SPPS online help on https://github.com/elomagic/spps-py
+
 -Relocation <path>
     Use this parameters to persist the master key at another location instead
     of the default '.sbbs' folder of the current users home.
 
 -Force
     Use this parameter in case when a master key file already exists. With this
-    parameter you agree to overwrite it.
+    parameter you agree to overwrite it.#

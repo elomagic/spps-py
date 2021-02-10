@@ -25,8 +25,7 @@
 import base64
 from Crypto.Random import get_random_bytes
 import sys
-import importlib.resources as pkg_resources
-from . import resources
+from pkg_resources import resource_string
 
 from simple_crypt import create_file as create_file
 
@@ -36,7 +35,7 @@ __license__ = "Apache-2.0"
 
 
 def print_help():
-    text = pkg_resources.read_text(resources, 'create_master_key.txt')
+    text = resource_string('resources', 'create_master_key.txt').decode('ascii')
     print(text)
 
 
