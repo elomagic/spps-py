@@ -135,4 +135,3 @@ def decrypt_string(value):
     b = cypher.decrypt_and_verify(cypher_text, tag)
 
     return b.decode("utf8")
-
