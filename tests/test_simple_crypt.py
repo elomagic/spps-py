@@ -11,10 +11,6 @@ def test_is_encrypted_value():
     assert not simple_crypt.is_encrypted_value(None)
 
 
-def test_encrypt_string():
-    assert len(simple_crypt.encrypt_string("secret")) == 54
-
-
 def test_crypt_string():
     v1 = simple_crypt.encrypt_string("secret")
     v2 = simple_crypt.encrypt_string("secret")
