@@ -48,6 +48,8 @@ print("...and my secret is: {}".format(secret))
 
 ### Create a master in your home folder:
 
+Enter following command in your terminal:
+
 ```bash  
 python create_master_key.py
 ```
@@ -60,6 +62,8 @@ relocation=
 ```
 
 ### Alternative, create a master key on a removable device:
+
+Enter following command in your terminal:
 
 ```bash
 python create_master_key.py -relocation=/Volumes/usb-stick
@@ -81,9 +85,15 @@ relocation=
 
 ## How to create an encrypted password
 
-...
+Enter following command in your terminal:
 
-``` python
+```bash 
+python encrypt_secret.py -Secret YourSecret 
+```
+
+Output should look like:
+```
+{MLaFzwpNyKJbJSCg4xY5g70WDAKnOhVe3oaaDAGWtH4KXR4=}
 ```
 
 ##
