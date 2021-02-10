@@ -22,12 +22,10 @@
 # limitations under the License.
 #
 
-import base64
-from Crypto.Random import get_random_bytes
 import sys
 from pkg_resources import resource_string
 
-from simple_crypt import create_file as create_file
+from simple_crypt import _create_file as create_file
 
 __author__ = "Carsten Rambow"
 __copyright__ = "Copyright 2021-present, Carsten Rambow (spps.dev@elomagic.de)"
@@ -47,5 +45,6 @@ r = None
 if "-Relocation" in sys.argv:
     r = sys.argv[sys.argv.index("-Relocation") + 1]
 
-key = base64.b64encode(get_random_bytes(32)).decode("ascii")
-create_file(key, r, None)
+force = "-Force" in sys.argv
+
+create_file(r, force)

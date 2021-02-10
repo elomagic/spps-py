@@ -3,6 +3,12 @@
 from spps import simple_crypt
 
 
+def test__create_file():
+    simple_crypt._create_file(None, True)
+    assert len(simple_crypt._read_property_("key")) > 30
+    assert len(simple_crypt._read_property_("relocation")) == 0
+
+
 def test_is_encrypted_value():
     assert simple_crypt.is_encrypted_value("{abc}")
     assert not simple_crypt.is_encrypted_value("abc}")

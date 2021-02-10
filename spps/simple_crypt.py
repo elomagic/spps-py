@@ -23,7 +23,6 @@
 #
 
 import base64
-import sys
 from pathlib import Path
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
@@ -39,12 +38,8 @@ MASTER_KEY_FILE = SPPS_FOLDER + "masterkey"
 KEY_FILENAME = "masterkey"
 
 
-def is_encrypted_value(value):
-    """Returns true when value is encrypted, tagged by surrounding braces "{" and "}"."""
-    return value is not None and value.startswith("{") and value.endswith("}")
-
-
 def _read_property_(key, location=None):
+    """Do not use this method from your project!"""
     if location is None:
         location = MASTER_KEY_FILE
 
@@ -54,28 +49,31 @@ def _read_property_(key, location=None):
     with open(location) as f:
         for line in f:
             if line.startswith(key + "="):
-                return line[len("key")+1:]
+                return line[len(key)+1:].replace("\n", "").replace("\r", "")
 
     raise ValueError("Key {} doesn't exists.".format(key))
 
 
-def create_file(master_key, relocation, path=None):
+def _create_file(relocation, force, path=None):
+    """Do not use this method from your project!"""
     if relocation is not None:
-        create_file(master_key, None, relocation)
+        _create_file(None, force, relocation)
+
+    master_key = base64.b64encode(get_random_bytes(32)).decode("ascii")
 
     if path is None:
         path = SPPS_FOLDER
 
     file = path + KEY_FILENAME
 
-    if os.path.isfile(file) and "-Force" not in sys.argv:
+    if os.path.isfile(file) and not force:
         raise FileExistsError("Master key file \"{}\" already exists. Use parameter \"-Force\" to overwrite it.". format(file))
 
     Path(path).mkdir(parents=True, exist_ok=True)
 
     # TODO Ask for master key location
 
-    k = master_key if relocation is None else None
+    k = master_key if relocation is None else ""
     r = relocation if relocation is not None else ""
 
     file = open(file, "w")
@@ -86,7 +84,7 @@ def create_file(master_key, relocation, path=None):
     file.close()
 
 
-def create_cipher(iv):
+def _create_cipher(iv):
     """Creates a cipher."""
 
     if not os.path.isfile(MASTER_KEY_FILE):
@@ -99,6 +97,11 @@ def create_cipher(iv):
     return AES.new(key, AES.MODE_GCM, nonce=iv)
 
 
+def is_encrypted_value(value):
+    """Returns true when value is encrypted, tagged by surrounding braces "{" and "}"."""
+    return value is not None and value.startswith("{") and value.endswith("}")
+
+
 def encrypt_string(value):
     """Encrypt, encoded as Base64 and encapsulate with curly bracket of a string."""
     if value is None:
@@ -106,7 +109,7 @@ def encrypt_string(value):
 
     iv = get_random_bytes(16)
     b = value.encode("utf8")
-    data, tag = create_cipher(iv).encrypt_and_digest(b)
+    data, tag = _create_cipher(iv).encrypt_and_digest(b)
 
     b64 = base64.b64encode(iv + data + tag)
     return "{" + b64.decode("utf-8") + "}"
@@ -128,7 +131,7 @@ def decrypt_string(value):
     cypher_text = data[16:-16]
     tag = data[-16:]
 
-    cypher = create_cipher(iv)
+    cypher = _create_cipher(iv)
     b = cypher.decrypt_and_verify(cypher_text, tag)
 
     return b.decode("utf8")
