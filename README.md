@@ -66,7 +66,7 @@ relocation=
 Enter following command in your terminal:
 
 ```bash
-python create_master_key.py -relocation=/Volumes/usb-stick
+python create_master_key.py -Relocation /Volumes/usb-stick
 ```
 
 The settings file ```'~/.spps/masterkey'``` in your home folder will look like:
