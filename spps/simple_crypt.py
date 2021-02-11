@@ -23,53 +23,83 @@
 #
 
 import base64
+from pathlib import Path
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 from os.path import expanduser
 import os.path
-from pathlib import Path
 
 __author__ = "Carsten Rambow"
 __copyright__ = "Copyright 2021-present, Carsten Rambow (spps.dev@elomagic.de)"
 __license__ = "Apache-2.0"
 
-MASTER_KEY_FOLDER = expanduser("~") + "/.spps/"
-MASTER_KEY_FILE = MASTER_KEY_FOLDER + "masterkey"
+SPPS_FOLDER = expanduser("~") + "/.spps/"
+MASTER_KEY_FILE = SPPS_FOLDER + "masterkey"
+KEY_FILENAME = "masterkey"
+
+
+def _read_property_(key, location=None):
+    """Do not use this method from your project!"""
+    if location is None:
+        location = MASTER_KEY_FILE
+
+    if not os.path.isfile(location):
+        raise FileNotFoundError("Unable to find settings file. At first you have to create a master key.")
+
+    with open(location) as f:
+        for line in f:
+            if line.startswith(key + "="):
+                return line[len(key)+1:].replace("\n", "").replace("\r", "")
+
+    raise ValueError("Key {} doesn't exists.".format(key))
+
+
+def _create_file(relocation, force, path=None):
+    """Do not use this method from your project!"""
+    if relocation is not None:
+        _create_file(None, force, relocation)
+
+    master_key = base64.b64encode(get_random_bytes(32)).decode("ascii")
+
+    if path is None:
+        path = SPPS_FOLDER
+
+    file = path + KEY_FILENAME
+
+    if os.path.isfile(file) and not force:
+        raise FileExistsError("Master key file \"{}\" already exists. Use parameter \"-Force\" to overwrite it.". format(file))
+
+    Path(path).mkdir(parents=True, exist_ok=True)
+
+    # TODO Ask for master key location
+
+    k = master_key if relocation is None else ""
+    r = relocation if relocation is not None else ""
+
+    file = open(file, "w")
+    file.writelines([
+        "key=" + k + "\n",
+        "relocation=" + r + "\n"
+    ])
+    file.close()
+
+
+def _create_cipher(iv):
+    """Creates a cipher."""
+
+    if not os.path.isfile(MASTER_KEY_FILE):
+        raise FileNotFoundError("Unable to find master key. One reason is that you location doesn't exists or at first you have to create a master key.")
+
+    value = _read_property_("key")
+
+    key = base64.b64decode(value)
+
+    return AES.new(key, AES.MODE_GCM, nonce=iv)
 
 
 def is_encrypted_value(value):
     """Returns true when value is encrypted, tagged by surrounding braces "{" and "}"."""
     return value is not None and value.startswith("{") and value.endswith("}")
-
-
-def create_random_key():
-    """ Creates and secure random key and returns it as Base64 encoded string."""
-    key = get_random_bytes(32)
-    return base64.b64encode(key).decode("ascii")
-
-
-def get_master_key():
-    """Reads or creates the master key."""
-    if os.path.isfile(MASTER_KEY_FILE):
-        data = open(MASTER_KEY_FILE, "r").read()
-        return base64.b64decode(data)
-    else:
-        key = create_random_key()
-
-        Path(MASTER_KEY_FOLDER).mkdir(parents=True, exist_ok=True)
-
-        file = open(MASTER_KEY_FILE, "w")
-        file.write(key)
-        file.close()
-
-        return base64.b64decode(key)
-
-
-def create_cipher(iv):
-    """Creates a cipher."""
-    key = get_master_key()
-
-    return AES.new(key, AES.MODE_GCM, nonce=iv)
 
 
 def encrypt_string(value):
@@ -79,7 +109,7 @@ def encrypt_string(value):
 
     iv = get_random_bytes(16)
     b = value.encode("utf8")
-    data, tag = create_cipher(iv).encrypt_and_digest(b)
+    data, tag = _create_cipher(iv).encrypt_and_digest(b)
 
     b64 = base64.b64encode(iv + data + tag)
     return "{" + b64.decode("utf-8") + "}"
@@ -101,8 +131,7 @@ def decrypt_string(value):
     cypher_text = data[16:-16]
     tag = data[-16:]
 
-    cypher = create_cipher(iv)
+    cypher = _create_cipher(iv)
     b = cypher.decrypt_and_verify(cypher_text, tag)
 
     return b.decode("utf8")
-
