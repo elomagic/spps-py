@@ -39,7 +39,14 @@ KEY_FILENAME = "masterkey"
 
 
 def _read_property_(key, location=None):
-    """Do not use this method from your project!"""
+    """
+    Do not use this method from your project!
+
+    :param key:
+    :param location:
+    :return:
+    """
+
     if location is None:
         location = MASTER_KEY_FILE
 
@@ -55,7 +62,15 @@ def _read_property_(key, location=None):
 
 
 def _create_file(relocation, force, path=None):
-    """Do not use this method from your project!"""
+    """
+    Please do not use this method from your project!
+
+    :param relocation:
+    :param force:
+    :param path:
+    :return:
+    """
+
     if relocation is not None:
         _create_file(None, force, relocation)
 
@@ -71,8 +86,6 @@ def _create_file(relocation, force, path=None):
 
     Path(path).mkdir(parents=True, exist_ok=True)
 
-    # TODO Ask for master key location
-
     k = master_key if relocation is None else ""
     r = relocation if relocation is not None else ""
 
@@ -85,7 +98,12 @@ def _create_file(relocation, force, path=None):
 
 
 def _create_cipher(iv):
-    """Creates a cipher."""
+    """
+    Creates a cipher. Please do not use his method.
+
+    :param iv: Initialization vector
+    :return: Returns a cipher
+    """
 
     if not os.path.isfile(MASTER_KEY_FILE):
         raise FileNotFoundError("Unable to find master key. One reason is that you location doesn't exists or at first you have to create a master key.")
@@ -98,12 +116,23 @@ def _create_cipher(iv):
 
 
 def is_encrypted_value(value):
-    """Returns true when value is encrypted, tagged by surrounding braces "{" and "}"."""
+    """
+    Checks value on surrounding braces.
+
+    :param value: Value to check
+    :return: Returns true when value is encrypted, tagged by surrounding braces "{" and "}".
+    """
     return value is not None and value.startswith("{") and value.endswith("}")
 
 
 def encrypt_string(value):
-    """Encrypt, encoded as Base64 and encapsulate with curly bracket of a string."""
+    """
+    Encrypt, encoded as Base64 and encapsulate with curly bracket of a string.
+
+    :param value: Value to encrypt
+    :return: Returns an Base64 string and encapsulate with curly brackets or None when given argument is also None
+    """
+
     if value is None:
         return None
 
@@ -116,7 +145,13 @@ def encrypt_string(value):
 
 
 def decrypt_string(value):
-    """Decrypt an encapsulate with curly bracket Base64 string."""
+    """
+    Decrypt an encapsulate with curly bracket Base64 string.
+
+    :param value: Base64 encoded string to decrypt
+    :return: Returns a decrypted string or None when given argument is also None
+    """
+
     if value is None:
         return None
 
