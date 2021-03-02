@@ -28,9 +28,9 @@ they can only read it if they also have the private key. You can check this by t
 
 A symmetrical encryption based on the AES-GCM 256 method is used. See also https://en.wikipedia.org/wiki/Galois/Counter_Mode
 
-By default, the private key is stored in a file "/.sbbs/masterkey" of the user home folder.
+By default, the private key is stored in a file "/.sbbs/settings" of the user home folder.
 
-Keep in mind that anyone who has access to the user home or relocation folder also has access to the master key !!!!
+Keep in mind that anyone who has access to the user home or relocation folder also has access to the private key !!!!
 
 ## Example
 
@@ -44,32 +44,32 @@ secret = simple_crypt.decrypt_string(encryptedSecret)
 print("...and my secret is: {}".format(secret))
 ```
 
-## How to create a master key
+## How to create a private key
 
-### Create a master in your home folder:
+### Create a private in your home folder:
 
 Enter following command in your terminal:
 
 ```bash  
-python create_master_key.py
+python create_private_key.py
 ```
 
-The settings file ```'~/.spps/masterkey'``` in your home folder will look like:
+The settings file ```'~/.spps/settings'``` in your home folder will look like:
 
 ```properties
 key=5C/Yi6+hbgRwIBhXT9PQGi83EVw2Oe6uttRSl4/kLzc=
 relocation=
 ```
 
-### Alternative, create a master key on a removable device:
+### Alternative, create a private key on a removable device:
 
 Enter following command in your terminal:
 
 ```bash
-python create_master_key.py -Relocation /Volumes/usb-stick
+python create_private_key.py -Relocation /Volumes/usb-stick
 ```
 
-The settings file ```'~/.spps/masterkey'``` in your home folder will look like:
+The settings file ```'~/.spps/settings'``` in your home folder will look like:
 
 ```properties
 key=

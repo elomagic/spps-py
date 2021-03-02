@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Creates a new master key. Existing master key will be overwritten!"""
+"""Creates a new private key file. Existing private key will be overwritten!"""
 
 #
 # Simple Password Protection Solution for Python
@@ -33,7 +33,7 @@ __license__ = "Apache-2.0"
 
 
 def print_help():
-    text = resource_string('resources', 'create_master_key.txt').decode('ascii')
+    text = resource_string('resources', 'create_private_key.txt').decode('ascii')
     print(text)
 
 

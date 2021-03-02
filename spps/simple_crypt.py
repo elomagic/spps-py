@@ -34,8 +34,8 @@ __copyright__ = "Copyright 2021-present, Carsten Rambow (spps.dev@elomagic.de)"
 __license__ = "Apache-2.0"
 
 SPPS_FOLDER = expanduser("~") + "/.spps/"
-MASTER_KEY_FILE = SPPS_FOLDER + "masterkey"
-KEY_FILENAME = "masterkey"
+KEY_FILENAME = "settings"
+PRIVATE_KEY_FILE = SPPS_FOLDER + KEY_FILENAME
 
 
 def _read_property_(key, location=None):
@@ -48,10 +48,10 @@ def _read_property_(key, location=None):
     """
 
     if location is None:
-        location = MASTER_KEY_FILE
+        location = PRIVATE_KEY_FILE
 
     if not os.path.isfile(location):
-        raise FileNotFoundError("Unable to find settings file. At first you have to create a master key.")
+        raise FileNotFoundError("Unable to find settings file. At first you have to create a private key.")
 
     with open(location) as f:
         for line in f:
@@ -74,7 +74,7 @@ def _create_file(relocation, force, path=None):
     if relocation is not None:
         _create_file(None, force, relocation)
 
-    master_key = base64.b64encode(get_random_bytes(32)).decode("ascii")
+    private_key = base64.b64encode(get_random_bytes(32)).decode("ascii")
 
     if path is None:
         path = SPPS_FOLDER
@@ -82,11 +82,11 @@ def _create_file(relocation, force, path=None):
     file = path + KEY_FILENAME
 
     if os.path.isfile(file) and not force:
-        raise FileExistsError("Master key file \"{}\" already exists. Use parameter \"-Force\" to overwrite it.". format(file))
+        raise FileExistsError("Private key file \"{}\" already exists. Use parameter \"-Force\" to overwrite it.". format(file))
 
     Path(path).mkdir(parents=True, exist_ok=True)
 
-    k = master_key if relocation is None else ""
+    k = private_key if relocation is None else ""
     r = relocation if relocation is not None else ""
 
     file = open(file, "w")
@@ -105,8 +105,8 @@ def _create_cipher(iv):
     :return: Returns a cipher
     """
 
-    if not os.path.isfile(MASTER_KEY_FILE):
-        raise FileNotFoundError("Unable to find master key. One reason is that you location doesn't exists or at first you have to create a master key.")
+    if not os.path.isfile(PRIVATE_KEY_FILE):
+        raise FileNotFoundError("Unable to find private key. One reason is that you location doesn't exists or at first you have to create a private key.")
 
     value = _read_property_("key")
 
