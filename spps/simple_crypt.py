@@ -22,53 +22,54 @@
 # limitations under the License.
 #
 
+import sys
 import base64
+from pkg_resources import resource_string
 from pathlib import Path
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 from os.path import expanduser
 import os.path
+import argument_parser as ap
 
 __author__ = "Carsten Rambow"
 __copyright__ = "Copyright 2021-present, Carsten Rambow (spps.dev@elomagic.de)"
 __license__ = "Apache-2.0"
 
-SPPS_FOLDER = expanduser("~") + "/.spps/"
-KEY_FILENAME = "settings"
-PRIVATE_KEY_FILE = SPPS_FOLDER + KEY_FILENAME
+DEFAULT_SETTINGS_FILE = expanduser("~") + os.path.sep + ".spps" + os.path.sep + "settings"
+__settings_file = DEFAULT_SETTINGS_FILE
 
 
-def _read_property_(key, location=None):
+def _read_property_(key, file=None):
     """
     Do not use this method from your project!
 
-    :param key:
-    :param location:
-    :return:
+    :param key: Key to get value from
+    :param file: File to read key value from
+    :return: Returns the property value or None when key doesn't exists
     """
 
-    if location is None:
-        location = PRIVATE_KEY_FILE
+    if file is None:
+        file = __settings_file
 
-    if not os.path.isfile(location):
-        raise FileNotFoundError("Unable to find settings file. At first you have to create a private key.")
+    if not os.path.isfile(file):
+        raise FileNotFoundError("Unable to find private key. One reason is that you location doesn't exists or  have at first you to create a private key.")
 
-    with open(location) as f:
+    with open(file) as f:
         for line in f:
             if line.startswith(key + "="):
                 return line[len(key)+1:].replace("\n", "").replace("\r", "")
 
-    raise ValueError("Key {} doesn't exists.".format(key))
+    return None
 
 
-def _create_file(relocation, force, path=None):
+def _create_file(relocation, force, file=None):
     """
     Please do not use this method from your project!
 
     :param relocation:
     :param force:
-    :param path:
-    :return:
+    :param file:
     """
 
     if relocation is not None:
@@ -76,15 +77,13 @@ def _create_file(relocation, force, path=None):
 
     private_key = base64.b64encode(get_random_bytes(32)).decode("ascii")
 
-    if path is None:
-        path = SPPS_FOLDER
-
-    file = path + KEY_FILENAME
+    if file is None:
+        file = __settings_file
 
     if os.path.isfile(file) and not force:
         raise FileExistsError("Private key file \"{}\" already exists. Use parameter \"-Force\" to overwrite it.". format(file))
 
-    Path(path).mkdir(parents=True, exist_ok=True)
+    Path(file).parent.mkdir(parents=True, exist_ok=True)
 
     k = private_key if relocation is None else ""
     r = relocation if relocation is not None else ""
@@ -105,10 +104,9 @@ def _create_cipher(iv):
     :return: Returns a cipher
     """
 
-    if not os.path.isfile(PRIVATE_KEY_FILE):
-        raise FileNotFoundError("Unable to find private key. One reason is that you location doesn't exists or at first you have to create a private key.")
-
-    value = _read_property_("key")
+    relocation = _read_property_("relocation")
+    file = __settings_file if relocation is None or relocation == "" else relocation
+    value = _read_property_("key", file)
 
     key = base64.b64decode(value)
 
@@ -170,3 +168,37 @@ def decrypt_string(value):
     b = cypher.decrypt_and_verify(cypher_text, tag)
 
     return b.decode("utf8")
+
+
+def set_settings_file(file):
+    """
+    Set an alternative default settings file instead of default "${user.home}/.spps/settings".
+
+    An application can use this feature to prevent sharing of the private key with other applications.
+
+    :param file: Alternative settings file or None to use the default file.
+    :return: Returns True when successful changed and False when file already set
+    """
+    global __settings_file
+    __settings_file = DEFAULT_SETTINGS_FILE if file is None else file
+
+
+def print_help():
+    text = resource_string('resources', 'simple_crypt.txt').decode('ascii')
+    print(text)
+
+
+def main():
+    if ap.contains_option("-Secret"):
+        print(encrypt_string(ap.get_value_of_option(sys.argv, "-Secret")))
+    elif ap.contains_option("-CreatePrivateKey"):
+        force = "-Force" in sys.argv
+        r = ap.get_value_of_option("-Relocation")
+        file = ap.get_value_of_option("-File")
+        _create_file(r, force, file)
+    else:
+        print_help()
+
+
+if __name__ == '__main__':
+    main()

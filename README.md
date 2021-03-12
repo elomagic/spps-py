@@ -46,12 +46,12 @@ print("...and my secret is: {}".format(secret))
 
 ## How to create a private key
 
-### Create a private in your home folder:
+### Create a private key in your home folder:
 
 Enter following command in your terminal:
 
 ```bash  
-python create_private_key.py
+python simple_crypt.py -CreatePrivateKey
 ```
 
 The settings file ```'~/.spps/settings'``` in your home folder will look like:
@@ -66,7 +66,7 @@ relocation=
 Enter following command in your terminal:
 
 ```bash
-python create_private_key.py -Relocation /Volumes/usb-stick
+python simple_crypt.py -CreatePrivateKey -Relocation /Volumes/usb-stick
 ```
 
 The settings file ```'~/.spps/settings'``` in your home folder will look like:
@@ -88,7 +88,7 @@ relocation=
 Enter following command in your terminal:
 
 ```bash 
-python encrypt_secret.py -Secret YourSecret 
+python simple_crypt.py -Secret YourSecret 
 ```
 
 Output should look like:

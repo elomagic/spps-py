@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Creates an encrypted string for a secret."""
+"""Helper class for parsing command line."""
 
 #
 # Simple Password Protection Solution for Python
@@ -23,23 +23,16 @@
 #
 
 import sys
-from pkg_resources import resource_string
-from simple_crypt import encrypt_string as encrypt
-
-__author__ = "Carsten Rambow"
-__copyright__ = "Copyright 2021-present, Carsten Rambow (spps.dev@elomagic.de)"
-__license__ = "Apache-2.0"
 
 
-def print_help():
-    text = resource_string('resources', 'encrypt_secret.txt').decode('ascii')
-    print(text)
+def contains_option(option):
+    """Returns true when option in list of args. Otherwise false"""
+    return option in sys.argv
 
 
-if "-?" in sys.argv or "-Help" in sys.argv:
-    print_help()
-elif "-Secret" in sys.argv:
-    v = sys.argv[sys.argv.index("-Secret") + 1]
-    print(encrypt(v))
-else:
-    print_help()
+def get_value_of_option(option, default_value=None):
+    """Returns value of option when in list of args. Otherwise default value. By default, default value is None."""
+    if not contains_option(option):
+        return default_value
+
+    return sys.argv[sys.argv.index(option) + 1]
