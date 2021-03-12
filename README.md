@@ -28,7 +28,7 @@ they can only read it if they also have the private key. You can check this by t
 
 A symmetrical encryption based on the AES-GCM 256 method is used. See also https://en.wikipedia.org/wiki/Galois/Counter_Mode
 
-By default, the private key is stored in a file "/.sbbs/settings" of the user home folder.
+By default, the private key is stored in a file "/.spps/settings" of the user home folder.
 
 Keep in mind that anyone who has access to the user home or relocation folder also has access to the private key !!!!
 
