@@ -35,7 +35,8 @@ Keep in mind that anyone who has access to the user home or relocation folder al
 ## Example
 
 ```python
-from spps import simple_crypt
+
+import simple_crypt
 
 encryptedSecret = simple_crypt.encrypt_string("My Secret")
 print("My encrypted secret is {}".format(encryptedSecret))

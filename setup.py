@@ -26,6 +26,10 @@ setup(
     },
     license="Apache-2.0",
     python_requires=">=3.9",
+    install_requires=[
+        'pycryptodome>=3.10.1'
+    ],
     keywords=["encrypt", "decrypt", "password", "security", "hide", "protect", "key", "secret", "AES", "GCM"],
-    packages=find_packages(exclude=('tests', 'docs'))
+    package_dir={'': 'src'},
+    packages=find_packages('src')
 )

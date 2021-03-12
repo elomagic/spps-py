@@ -5,13 +5,11 @@ import tempfile
 import shutil
 import pytest
 from io import StringIO
-from os.path import expanduser
 from os import path
-
 from spps import simple_crypt
 
 backup = None
-SETTINGS = expanduser("~") + "/.spps/settings"
+SETTINGS = path.expanduser("~") + "/.spps/settings"
 
 
 def setup_module(module):
@@ -19,7 +17,7 @@ def setup_module(module):
 
     if path.exists(SETTINGS):
         print("Backup existing settings")
-        with open (SETTINGS, "r") as my_file:
+        with open(SETTINGS, "r") as my_file:
             backup = my_file.read()
 
 
@@ -30,7 +28,7 @@ def teardown_module(module):
         return
 
     print("Restore existing settings")
-    with open (SETTINGS, "w") as my_file:
+    with open(SETTINGS, "w") as my_file:
         my_file.write(backup)
 
 
@@ -67,7 +65,7 @@ def test_crypt_string():
 def test_set_settings_file():
 
     temp_folder = tempfile.mkdtemp()
-    settings_file = temp_folder + "/alternativeSettings"
+    settings_file = temp_folder + path.sep + "alternativeSettings"
     assert not path.exists(settings_file)
 
     value = "secretäöüß"
@@ -92,10 +90,7 @@ def test_set_settings_file():
 
 
 def test_command_line_encrypt():
-    sys.argv = [
-        "-Secret",
-        "abc"
-    ]
+    sys.argv = ["-Secret", "abc"]
 
     old_stdout = sys.stdout
     sys.stdout = my_stdout = StringIO()
@@ -109,7 +104,7 @@ def test_command_line_encrypt():
 
 
 def test_command_line_help():
-    sys.argv = [ "-?" ]
+    sys.argv = ["-?"]
 
     old_stdout = sys.stdout
     sys.stdout = my_stdout = StringIO()

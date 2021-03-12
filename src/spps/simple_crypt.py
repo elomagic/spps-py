@@ -30,7 +30,7 @@ from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 from os.path import expanduser
 import os.path
-import argument_parser as ap
+from spps import argument_parser as ap
 
 __author__ = "Carsten Rambow"
 __copyright__ = "Copyright 2021-present, Carsten Rambow (spps.dev@elomagic.de)"
@@ -184,7 +184,7 @@ def set_settings_file(file):
 
 
 def print_help():
-    text = resource_string('resources', 'simple_crypt.txt').decode('ascii')
+    text = resource_string('spps.resources', 'simple_crypt.txt').decode('ascii')
     print(text)
 
 
