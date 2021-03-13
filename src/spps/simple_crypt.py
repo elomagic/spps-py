@@ -53,7 +53,8 @@ def _read_property_(key, file=None):
         file = __settings_file
 
     if not os.path.isfile(file):
-        raise FileNotFoundError("Unable to find private key. One reason is that you location doesn't exists or  have at first you to create a private key.")
+        raise FileNotFoundError("Unable to find private key. One reason is that you location doesn't exists or "
+                                "have at first you to create a private key.")
 
     with open(file) as f:
         for line in f:
@@ -81,7 +82,8 @@ def _create_file(relocation, force, file=None):
         file = __settings_file
 
     if os.path.isfile(file) and not force:
-        raise FileExistsError("Private key file \"{}\" already exists. Use parameter \"-Force\" to overwrite it.". format(file))
+        raise FileExistsError("Private key file \"{}\" already exists. Use parameter \"-Force\" to overwrite it."
+                              . format(file))
 
     Path(file).parent.mkdir(parents=True, exist_ok=True)
 
