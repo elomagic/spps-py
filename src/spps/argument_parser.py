@@ -22,8 +22,6 @@
 # limitations under the License.
 #
 
-import sys
-
 __author__ = "Carsten Rambow"
 __copyright__ = "Copyright 2021-present, Carsten Rambow (spps.dev@elomagic.de)"
 __license__ = "Apache-2.0"
@@ -31,7 +29,7 @@ __license__ = "Apache-2.0"
 
 def contains_option(argv, option):
     """
-    Check on sys.argv containing the given option.
+    Check on argv containing the given option.
 
     :param argv: Array of arguments
     :param option: Argument to check
@@ -52,4 +50,4 @@ def get_value_of_option(argv, option, default_value=None):
     if argv is None or not contains_option(argv, option):
         return default_value
 
-    return sys.argv[argv.index(option) + 1]
+    return argv[argv.index(option) + 1]

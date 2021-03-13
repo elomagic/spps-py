@@ -1,26 +1,24 @@
-#!/usr/bin/env python
+"""
+Main package for en- and decrypt strings
 
-"""Main package for en- and decrypt strings"""
+Simple Password Protection Solution for Python
 
-#
-# Simple Password Protection Solution for Python
-#
-# Copyright © 2021-present Carsten Rambow (spps.dev@elomagic.de)
-#
-# This file is part of Simple Password Protection Solution with Python.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
+Copyright © 2021-present Carsten Rambow (spps.dev@elomagic.de)
+
+This file is part of Simple Password Protection Solution with Python.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
 
 import sys
 import base64
@@ -192,9 +190,9 @@ def print_help():
 
 def main(argv=None):
     if ap.contains_option(argv, "-Secret"):
-        print(encrypt_string(ap.get_value_of_option(sys.argv, "-Secret")))
+        print(encrypt_string(ap.get_value_of_option(argv, "-Secret")))
     elif ap.contains_option(argv, "-CreatePrivateKey"):
-        force = "-Force" in sys.argv
+        force = "-Force" in argv
         r = ap.get_value_of_option(argv, "-Relocation")
         file = ap.get_value_of_option(argv, "-File")
         _create_file(r, force, file)
