@@ -6,6 +6,9 @@ language: python
 python:
   - "3.9"
 
+env:
+  - PYTHONPATH=src
+
 # Install the pip dependencies
 install:
   - pip install -r requirements.txt
