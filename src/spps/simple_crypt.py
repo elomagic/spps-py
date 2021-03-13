@@ -37,7 +37,7 @@ __copyright__ = "Copyright 2021-present, Carsten Rambow (spps.dev@elomagic.de)"
 __license__ = "Apache-2.0"
 
 DEFAULT_SETTINGS_FILE = expanduser("~") + os.path.sep + ".spps" + os.path.sep + "settings"
-__settings_file = DEFAULT_SETTINGS_FILE
+_settings_file = DEFAULT_SETTINGS_FILE
 
 
 def _read_property_(key, file=None):
@@ -50,7 +50,7 @@ def _read_property_(key, file=None):
     """
 
     if file is None:
-        file = __settings_file
+        file = _settings_file
 
     if not os.path.isfile(file):
         raise FileNotFoundError("Unable to find private key. One reason is that you location doesn't exists or "
@@ -79,7 +79,7 @@ def _create_file(relocation, force, file=None):
     private_key = base64.b64encode(get_random_bytes(32)).decode("ascii")
 
     if file is None:
-        file = __settings_file
+        file = _settings_file
 
     if os.path.isfile(file) and not force:
         raise FileExistsError("Private key file \"{}\" already exists. Use parameter \"-Force\" to overwrite it."
@@ -107,7 +107,7 @@ def _create_cipher(iv):
     """
 
     relocation = _read_property_("relocation")
-    file = __settings_file if relocation is None or relocation == "" else relocation
+    file = _settings_file if relocation is None or relocation == "" else relocation
     value = _read_property_("key", file)
 
     key = base64.b64decode(value)
@@ -181,8 +181,8 @@ def set_settings_file(file):
     :param file: Alternative settings file or None to use the default file.
     :return: Returns True when successful changed and False when file already set
     """
-    global __settings_file
-    __settings_file = DEFAULT_SETTINGS_FILE if file is None else file
+    global _settings_file
+    _settings_file = DEFAULT_SETTINGS_FILE if file is None else file
 
 
 def print_help():
