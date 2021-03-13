@@ -19,6 +19,13 @@ setup(
     long_description_content_type="text/markdown",
     author="Carsten Rambow",
     author_email="spps.dev@elomagic.de",
+    classifiers=['Development Status :: 3 - Alpha',
+                 'Intended Audience :: Developers',
+                 'License :: OSI Approved :: Apache Software License',
+                 'Programming Language :: Python :: 3.9',
+                 'Topic :: Security',
+                 'Topic :: Security :: Cryptography',
+                 'Topic :: Software Development'],
     url="https://github.com/elomagic/spps-py",
     project_urls={
         'Source': 'https://github.com/elomagic/spps-py',
