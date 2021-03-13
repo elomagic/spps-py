@@ -24,14 +24,29 @@
 
 import sys
 
+__author__ = "Carsten Rambow"
+__copyright__ = "Copyright 2021-present, Carsten Rambow (spps.dev@elomagic.de)"
+__license__ = "Apache-2.0"
+
 
 def contains_option(option):
-    """Returns true when option in list of args. Otherwise false"""
+    """
+    Check on sys.argv containing the given option.
+
+    :param option: Argument to check
+    :return: Returns true when option in list of args. Otherwise false
+    """
     return option in sys.argv
 
 
 def get_value_of_option(option, default_value=None):
-    """Returns value of option when in list of args. Otherwise default value. By default, default value is None."""
+    """
+    Get value of key.
+
+    :param option: Value of key to get
+    :param default_value: Default value when key doesn't exists
+    :return: Returns value of option when in list of args. Otherwise default value. By default, default value is None.
+    """
     if not contains_option(option):
         return default_value
 
