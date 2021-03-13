@@ -190,17 +190,17 @@ def print_help():
     print(text)
 
 
-def main():
-    if ap.contains_option("-Secret"):
+def main(argv=None):
+    if ap.contains_option(argv, "-Secret"):
         print(encrypt_string(ap.get_value_of_option(sys.argv, "-Secret")))
-    elif ap.contains_option("-CreatePrivateKey"):
+    elif ap.contains_option(argv, "-CreatePrivateKey"):
         force = "-Force" in sys.argv
-        r = ap.get_value_of_option("-Relocation")
-        file = ap.get_value_of_option("-File")
+        r = ap.get_value_of_option(argv, "-Relocation")
+        file = ap.get_value_of_option(argv, "-File")
         _create_file(r, force, file)
     else:
         print_help()
 
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv)

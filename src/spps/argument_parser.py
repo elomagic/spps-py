@@ -29,25 +29,27 @@ __copyright__ = "Copyright 2021-present, Carsten Rambow (spps.dev@elomagic.de)"
 __license__ = "Apache-2.0"
 
 
-def contains_option(option):
+def contains_option(argv, option):
     """
     Check on sys.argv containing the given option.
 
+    :param argv: Array of arguments
     :param option: Argument to check
     :return: Returns true when option in list of args. Otherwise false
     """
-    return option in sys.argv
+    return option in argv
 
 
-def get_value_of_option(option, default_value=None):
+def get_value_of_option(argv, option, default_value=None):
     """
     Get value of key.
 
+    :param argv: Array of arguments
     :param option: Value of key to get
     :param default_value: Default value when key doesn't exists
     :return: Returns value of option when in list of args. Otherwise default value. By default, default value is None.
     """
-    if not contains_option(option):
+    if argv is None or not contains_option(argv, option):
         return default_value
 
-    return sys.argv[sys.argv.index(option) + 1]
+    return sys.argv[argv.index(option) + 1]

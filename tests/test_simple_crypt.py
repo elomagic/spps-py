@@ -7,6 +7,7 @@ import pytest
 from io import StringIO
 from os import path
 from spps import simple_crypt
+#from spps.simple_crypt import main
 
 backup = None
 SETTINGS = path.expanduser("~") + "/.spps/settings"
@@ -89,12 +90,10 @@ def test_set_settings_file():
 
 
 def test_main_encrypt():
-    sys.argv = ["-Secret", "abc"]
-
     old_stdout = sys.stdout
     sys.stdout = my_stdout = StringIO()
 
-    simple_crypt.main()
+    simple_crypt.main(["-Secret", "abc"])
 
     text = my_stdout.getvalue()
     sys.stdout = old_stdout
@@ -103,12 +102,10 @@ def test_main_encrypt():
 
 
 def test_command_help():
-    sys.argv = ["-?"]
-
     old_stdout = sys.stdout
     sys.stdout = my_stdout = StringIO()
 
-    simple_crypt.main()
+    simple_crypt.main(["-?"])
 
     text = my_stdout.getvalue()
     sys.stdout = old_stdout
