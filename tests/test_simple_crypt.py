@@ -63,7 +63,6 @@ def test_crypt_string():
 
 
 def test_set_settings_file():
-
     temp_folder = tempfile.mkdtemp()
     settings_file = temp_folder + path.sep + "alternativeSettings"
     assert not path.exists(settings_file)
@@ -71,7 +70,7 @@ def test_set_settings_file():
     value = "secretäöüß"
     simple_crypt._create_file(None, True)
     encrypted1 = simple_crypt.encrypt_string(value)
-    assert simple_crypt.is_encrypted_value(encrypted1);
+    assert simple_crypt.is_encrypted_value(encrypted1)
     assert value == simple_crypt.decrypt_string(encrypted1)
 
     simple_crypt.set_settings_file(settings_file)
@@ -89,7 +88,7 @@ def test_set_settings_file():
     shutil.rmtree(temp_folder)
 
 
-def test_command_line_encrypt():
+def test_main_encrypt():
     sys.argv = ["-Secret", "abc"]
 
     old_stdout = sys.stdout
@@ -103,7 +102,7 @@ def test_command_line_encrypt():
     assert simple_crypt.is_encrypted_value(text.strip())
 
 
-def test_command_line_help():
+def test_command_help():
     sys.argv = ["-?"]
 
     old_stdout = sys.stdout
