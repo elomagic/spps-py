@@ -3,6 +3,9 @@
 """Packaging script."""
 
 from setuptools import setup, find_packages
+from os.path import splitext
+from os.path import basename
+from glob import glob
 
 __author__ = "Carsten Rambow"
 __copyright__ = "Copyright 2021-present, Carsten Rambow (spps.dev@elomagic.de)"
@@ -38,5 +41,9 @@ setup(
     ],
     keywords=["encrypt", "decrypt", "password", "security", "hide", "protect", "key", "secret", "AES", "GCM"],
     package_dir={'': 'src'},
-    packages=find_packages('src')
+    packages=find_packages('src'),
+    py_modules=[splitext(basename(path))[0] for path in glob('src/*.py')],
+    setup_requires=[
+        'pytest-runner'
+    ]
 )
