@@ -15,7 +15,7 @@ install:
 
 # Run the unit test
 script:
-  - pytest --cov=spps/
+  - pytest --cov=src/
 
 # Enable cache
 cache: pip
