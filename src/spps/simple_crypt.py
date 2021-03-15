@@ -38,6 +38,11 @@ DEFAULT_SETTINGS_FILE = expanduser("~") + os.path.sep + ".spps" + os.path.sep + 
 _settings_file = DEFAULT_SETTINGS_FILE
 
 
+class GeneralSecurityException(Exception):
+    """Not in detail specified security exception"""
+    pass
+
+
 def _read_property_(key, file=None):
     """
     Do not use this method from your project!
@@ -47,19 +52,22 @@ def _read_property_(key, file=None):
     :return: Returns the property value or None when key doesn't exists
     """
 
-    if file is None:
-        file = _settings_file
+    try:
+        if file is None:
+            file = _settings_file
 
-    if not os.path.isfile(file):
-        raise FileNotFoundError("Unable to find private key. One reason is that you location doesn't exists or "
-                                "have at first you to create a private key.")
+        if not os.path.isfile(file):
+            raise FileNotFoundError("Unable to find private key. One reason is that you location doesn't exists or "
+                                    "have at first you to create a private key.")
 
-    with open(file) as f:
-        for line in f:
-            if line.startswith(key + "="):
-                return line[len(key)+1:].replace("\n", "").replace("\r", "")
+        with open(file) as f:
+            for line in f:
+                if line.startswith(key + "="):
+                    return line[len(key)+1:].replace("\n", "").replace("\r", "")
 
-    return None
+        return None
+    except Exception as ex:
+        raise GeneralSecurityException(ex)
 
 
 def _create_file(relocation, force, file=None):
@@ -71,29 +79,32 @@ def _create_file(relocation, force, file=None):
     :param file:
     """
 
-    if relocation is not None:
-        _create_file(None, force, relocation)
+    try:
+        if relocation is not None:
+            _create_file(None, force, relocation)
 
-    private_key = base64.b64encode(get_random_bytes(32)).decode("ascii")
+        private_key = base64.b64encode(get_random_bytes(32)).decode("ascii")
 
-    if file is None:
-        file = _settings_file
+        if file is None:
+            file = _settings_file
 
-    if os.path.isfile(file) and not force:
-        raise FileExistsError("Private key file \"{}\" already exists. Use parameter \"-Force\" to overwrite it."
-                              . format(file))
+        if os.path.isfile(file) and not force:
+            raise FileExistsError("Private key file \"{}\" already exists. Use parameter \"-Force\" to overwrite it."
+                                  . format(file))
 
-    Path(file).parent.mkdir(parents=True, exist_ok=True)
+        Path(file).parent.mkdir(parents=True, exist_ok=True)
 
-    k = private_key if relocation is None else ""
-    r = relocation if relocation is not None else ""
+        k = private_key if relocation is None else ""
+        r = relocation if relocation is not None else ""
 
-    file = open(file, "w")
-    file.writelines([
-        "key=" + k + "\n",
-        "relocation=" + r + "\n"
-    ])
-    file.close()
+        file = open(file, "w")
+        file.writelines([
+            "key=" + k + "\n",
+            "relocation=" + r + "\n"
+        ])
+        file.close()
+    except Exception as ex:
+        raise GeneralSecurityException(ex)
 
 
 def _create_cipher(iv):
@@ -104,13 +115,16 @@ def _create_cipher(iv):
     :return: Returns a cipher
     """
 
-    relocation = _read_property_("relocation")
-    file = _settings_file if relocation is None or relocation == "" else relocation
-    value = _read_property_("key", file)
+    try:
+        relocation = _read_property_("relocation")
+        file = _settings_file if relocation is None or relocation == "" else relocation
+        value = _read_property_("key", file)
 
-    key = base64.b64decode(value)
+        key = base64.b64decode(value)
 
-    return AES.new(key, AES.MODE_GCM, nonce=iv)
+        return AES.new(key, AES.MODE_GCM, nonce=iv)
+    except Exception as ex:
+        raise GeneralSecurityException(ex)
 
 
 def is_encrypted_value(value):
@@ -131,15 +145,18 @@ def encrypt_string(value):
     :return: Returns an Base64 string and encapsulate with curly brackets or None when given argument is also None
     """
 
-    if value is None:
-        return None
+    try:
+        if value is None:
+            return None
 
-    iv = get_random_bytes(16)
-    b = value.encode("utf8")
-    data, tag = _create_cipher(iv).encrypt_and_digest(b)
+        iv = get_random_bytes(16)
+        b = value.encode("utf8")
+        data, tag = _create_cipher(iv).encrypt_and_digest(b)
 
-    b64 = base64.b64encode(iv + data + tag)
-    return "{" + b64.decode("utf-8") + "}"
+        b64 = base64.b64encode(iv + data + tag)
+        return "{" + b64.decode("utf-8") + "}"
+    except Exception as ex:
+        raise GeneralSecurityException(ex)
 
 
 def decrypt_string(value):
@@ -150,24 +167,27 @@ def decrypt_string(value):
     :return: Returns a decrypted string or None when given argument is also None
     """
 
-    if value is None:
-        return None
+    try:
+        if value is None:
+            return None
 
-    if not is_encrypted_value(value):
-        print("Given method parameter is not encrypted")
-        exit()
+        if not is_encrypted_value(value):
+            print("Given method parameter is not encrypted")
+            exit()
 
-    b64 = value[1: -1]
-    data = base64.b64decode(b64.encode("ascii"))
+        b64 = value[1: -1]
+        data = base64.b64decode(b64.encode("ascii"))
 
-    iv = data[:16]
-    cypher_text = data[16:-16]
-    tag = data[-16:]
+        iv = data[:16]
+        cypher_text = data[16:-16]
+        tag = data[-16:]
 
-    cypher = _create_cipher(iv)
-    b = cypher.decrypt_and_verify(cypher_text, tag)
+        cypher = _create_cipher(iv)
+        b = cypher.decrypt_and_verify(cypher_text, tag)
 
-    return b.decode("utf8")
+        return b.decode("utf8")
+    except Exception as ex:
+        raise GeneralSecurityException(ex)
 
 
 def set_settings_file(file):

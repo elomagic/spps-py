@@ -7,7 +7,7 @@ import pytest
 from io import StringIO
 from os import path
 from spps import simple_crypt
-#from spps.simple_crypt import main
+from spps.simple_crypt import GeneralSecurityException
 
 backup = None
 SETTINGS = path.expanduser("~") + "/.spps/settings"
@@ -75,7 +75,7 @@ def test_set_settings_file():
     assert value == simple_crypt.decrypt_string(encrypted1)
 
     simple_crypt.set_settings_file(settings_file)
-    with pytest.raises(Exception):
+    with pytest.raises(GeneralSecurityException):
         simple_crypt.decrypt_string(encrypted1)
 
     simple_crypt._create_file(None, True)
@@ -83,7 +83,7 @@ def test_set_settings_file():
 
     encrypted2 = simple_crypt.encrypt_string(value)
     simple_crypt.set_settings_file(None)
-    with pytest.raises(Exception):
+    with pytest.raises(GeneralSecurityException):
         simple_crypt.decrypt_string(encrypted2)
 
     shutil.rmtree(temp_folder)
