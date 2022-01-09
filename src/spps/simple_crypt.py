@@ -11,7 +11,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0
+https://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 from os.path import expanduser
 import os.path
-from spps import argument_parser as ap
+import argument_parser as ap
 
 __author__ = "Carsten Rambow"
 __copyright__ = "Copyright 2021-present, Carsten Rambow (spps.dev@elomagic.de)"
@@ -43,18 +43,30 @@ class GeneralSecurityException(Exception):
     pass
 
 
-def _read_property_(key, file=None):
+def _settings_file_exists(alternative_file=None):
+    """
+    Checks if the settings file already exists.
+
+    :param alternative_file: Alternative file to check instead of the default settings file. When None then default will
+     be checked
+    :return: Returns true when file exists otherwise false
+    """
+
+    file = _settings_file if alternative_file is None else alternative_file
+    return os.path.isfile(file)
+
+
+def _read_property_(key, alternative_file=None):
     """
     Do not use this method from your project!
 
     :param key: Key to get value from
-    :param file: File to read key value from
-    :return: Returns the property value or None when key doesn't exists
+    :param alternative_file: File to read key value from. If none then default file will be used
+    :return: Returns the property value or None when key doesn't exist
     """
 
     try:
-        if file is None:
-            file = _settings_file
+        file = _settings_file if alternative_file is None else alternative_file
 
         if not os.path.isfile(file):
             raise FileNotFoundError("Unable to find private key. One reason is that you location doesn't exists or "
@@ -70,13 +82,13 @@ def _read_property_(key, file=None):
         raise GeneralSecurityException(ex)
 
 
-def _create_file(relocation, force, file=None):
+def _create_file(relocation, force, alternative_file=None):
     """
-    Please do not use this method from your project!
+    Please do not use this method never from your project!
 
     :param relocation:
     :param force:
-    :param file:
+    :param alternative_file:
     """
 
     try:
@@ -85,8 +97,7 @@ def _create_file(relocation, force, file=None):
 
         private_key = base64.b64encode(get_random_bytes(32)).decode("ascii")
 
-        if file is None:
-            file = _settings_file
+        file = _settings_file if alternative_file is None else alternative_file
 
         if os.path.isfile(file) and not force:
             raise FileExistsError("Private key file \"{}\" already exists. Use parameter \"-Force\" to overwrite it."
@@ -174,6 +185,9 @@ def decrypt_string(value):
         if not is_encrypted_value(value):
             print("Given method parameter is not encrypted")
             exit()
+
+        if not _settings_file_exists():
+            _create_file(None, True)
 
         b64 = value[1: -1]
         data = base64.b64decode(b64.encode("ascii"))
