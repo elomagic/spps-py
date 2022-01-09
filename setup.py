@@ -15,7 +15,7 @@ with open('README.md') as f:
     readme = f.read()
 
 setup(
-    name="spps",
+    name="spps-py",
     version="1.0.0rc1",
     description="Simple Password Protection Solution for Python",
     long_description=readme,
@@ -41,7 +41,10 @@ setup(
     ],
     keywords=["encrypt", "decrypt", "password", "security", "hide", "protect", "key", "secret", "AES", "GCM"],
     package_dir={'': 'src'},
-    packages=find_packages('src'),
+    packages=find_packages(
+        where='src',
+        exclude=["contrib", "docs", "tests*", "tasks"]
+    ),
     py_modules=[splitext(basename(path))[0] for path in glob('src/*.py')],
     setup_requires=[
         'pytest-runner'
