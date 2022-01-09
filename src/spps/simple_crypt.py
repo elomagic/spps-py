@@ -29,6 +29,7 @@ from Crypto.Random import get_random_bytes
 from os.path import expanduser
 import os.path
 import argument_parser as ap
+from datetime import datetime
 
 __author__ = "Carsten Rambow"
 __copyright__ = "Copyright 2021-present, Carsten Rambow (spps.dev@elomagic.de)"
@@ -110,6 +111,8 @@ def _create_file(relocation, force, alternative_file=None):
 
         file = open(file, "w")
         file.writelines([
+            "# SPPS Settings - Created by spps-py\n"
+            "created=" + datetime.now().isoformat() + "\n",
             "key=" + k + "\n",
             "relocation=" + r + "\n"
         ])
@@ -160,6 +163,9 @@ def encrypt_string(value):
         if value is None:
             return None
 
+        if not _settings_file_exists():
+            _create_file(None, True)
+
         iv = get_random_bytes(16)
         b = value.encode("utf8")
         data, tag = _create_cipher(iv).encrypt_and_digest(b)
@@ -185,9 +191,6 @@ def decrypt_string(value):
         if not is_encrypted_value(value):
             print("Given method parameter is not encrypted")
             exit()
-
-        if not _settings_file_exists():
-            _create_file(None, True)
 
         b64 = value[1: -1]
         data = base64.b64decode(b64.encode("ascii"))
@@ -218,7 +221,7 @@ def set_settings_file(file):
 
 
 def print_help():
-    text = resource_string('spps.resources', 'simple_crypt.txt').decode('ascii')
+    text = resource_string('resources', 'simple_crypt.txt').decode('ascii')
     print(text)
 
 
