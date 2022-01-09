@@ -16,7 +16,11 @@ The SPPS is a lightweight solution to protect / hide your password or anything e
 ## Features
 
 * AES 256 GCM en-/decryption
-* Cross programming languages support ([Java](https://github.com/elomagic/spps-jshiro), [Python](https://github.com/elomagic/spps-py), [Node.js](https://github.com/elomagic/spps-npm))
+* Cross programming languages support 
+  * [Java with Bouncy Castle](https://github.com/elomagic/spps-jbc)
+  * [Java with Apache Shiro](https://github.com/elomagic/spps-jshiro)
+  * [Python](https://github.com/elomagic/spps-py), 
+  * [Node.js](https://github.com/elomagic/spps-npm)
 
 ## Concept
 
@@ -34,6 +38,10 @@ See also https://en.wikipedia.org/wiki/Galois/Counter_Mode
 By default, the private key is stored in a file "/.spps/settings" of the user home folder.
 
 Keep in mind that anyone who has access to the user home or relocation folder also has access to the private key !!!!
+
+## Requirements
+* Python version 3
+* Python module pycryptodome
 
 ## Example
 
