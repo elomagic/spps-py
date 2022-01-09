@@ -93,7 +93,7 @@ def test_main_encrypt():
     old_stdout = sys.stdout
     sys.stdout = my_stdout = StringIO()
 
-    simple_crypt.main(["-Secret", "abc"])
+    simple_crypt._main(["-Secret", "abc"])
 
     text = my_stdout.getvalue()
     sys.stdout = old_stdout
@@ -105,7 +105,7 @@ def test_command_help():
     old_stdout = sys.stdout
     sys.stdout = my_stdout = StringIO()
 
-    simple_crypt.main(["-?"])
+    simple_crypt._main(["-?"])
 
     text = my_stdout.getvalue()
     sys.stdout = old_stdout

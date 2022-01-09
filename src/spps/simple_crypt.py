@@ -178,7 +178,7 @@ def encrypt_string(value):
 
 def decrypt_string(value):
     """
-    Decrypt an encapsulate with curly bracket Base64 string.
+    Decrypt an encapsulated with curly bracket Base64 string.
 
     :param value: Base64 encoded string to decrypt
     :return: Returns a decrypted string or None when given argument is also None
@@ -220,12 +220,12 @@ def set_settings_file(file):
     _settings_file = DEFAULT_SETTINGS_FILE if file is None else file
 
 
-def print_help():
+def _print_help():
     text = resource_string('resources', 'simple_crypt.txt').decode('ascii')
     print(text)
 
 
-def main(argv=None):
+def _main(argv=None):
     if ap.contains_option(argv, "-Secret"):
         print(encrypt_string(ap.get_value_of_option(argv, "-Secret")))
     elif ap.contains_option(argv, "-CreatePrivateKey"):
@@ -234,8 +234,8 @@ def main(argv=None):
         file = ap.get_value_of_option(argv, "-File")
         _create_file(r, force, file)
     else:
-        print_help()
+        _print_help()
 
 
 if __name__ == '__main__':
-    main(sys.argv)
+    _main(sys.argv)
